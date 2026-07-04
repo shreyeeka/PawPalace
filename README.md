@@ -166,20 +166,13 @@ http://127.0.0.1:8000/
 ### Login/Register
 
 ![Signup](images/signup.png)
-
 ![Login](images/login.png)
 
 ---
 
 ### 🏠 Homepage
 
-![Homepage](images/homepage.png)
-
----
-
-### Customer Dashboard
-
-![Customers](images/customer.png)
+![Homepage](images/customer.png)
 
 ---
 
@@ -213,7 +206,21 @@ http://127.0.0.1:8000/
 
 ![Vendor](images/vendor.png)
 
+- Vendor add product
+![Vendor](images/Vproduct.png)
+![Vendor](images/Vproduct2.png)
 
+- Vendor add service
+![Vendor](images/Vservices.png)
+
+---
+
+### Admin dashboard
+
+![Admin](images/admin.png)
+![Admin](images/admin2.png)
+
+---
 
 ## 💡 Key Highlights
 
@@ -241,5 +248,5 @@ http://127.0.0.1:8000/
 
 ## 📚 Academic Purpose
 
-This project was developed as part of the **Bachelor of Science in Computer Science and Information Technology (BSc CSIT)** curriculum to demonstrate practical implementation of full-stack web development concepts using Django and MySQL.
+This project was developed as part of the **Bachelor of Science in Computer Science and Information Technology (BSc CSIT)** curriculum to demonstrate practical implementation of full-stack web development concepts.
 
