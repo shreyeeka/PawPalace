@@ -161,37 +161,59 @@ http://127.0.0.1:8000/
 
 ---
 
-## 📸 Project Screenshots
+## Project Screenshots
+
+### Login/Register
+
+![Signup](images/signup.png)
+
+![Login](images/login.png)
+
+---
 
 ### 🏠 Homepage
 
-![Homepage](assets/screenshots/homepage.png)
+![Homepage](images/homepage.png)
 
 ---
 
-### 🛍️ Products Page
+### Customer Dashboard
 
-![Products](assets/screenshots/products.png)
+![Customers](images/customer.png)
 
 ---
 
-### 🐶 Services Page
+### Products Page
 
-![Services](assets/screenshots/services.png)
+![Products](images/products.png)
+
+---
+
+### Services Page
+
+![Services](images/services.png)
 
 ---
 
 ### 🛒 Shopping Cart
 
-![Cart](assets/screenshots/cart.png)
+![Cart](images/cart.png)
+![Cart](images/cart2.png)
 
 ---
 
 ### 💳 Checkout
 
-![Checkout](assets/screenshots/checkout.png)
+![Checkout](images/checkout.png)
+![Payment](images/payment.png)
 
 ---
+
+### Vendor dashboard
+
+![Vendor](images/vendor.png)
+
+
 
 ## 💡 Key Highlights
 
