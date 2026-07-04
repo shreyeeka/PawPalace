@@ -246,7 +246,4 @@ http://127.0.0.1:8000/
 
 ---
 
-## 📚 Academic Purpose
-
-This project was developed as part of the **Bachelor of Science in Computer Science and Information Technology (BSc CSIT)** curriculum to demonstrate practical implementation of full-stack web development concepts.
 
