@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Orders - PawPalace{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>My Orders</h1>
+    </div>
+
+    <div class="orders-list">
+        {% if orders %}
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Order Number</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Total</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    <tr>
+                        <td>#{{ order.order_number }}</td>
+                        <td>{{ order.created_at|date:"M d, Y" }}</td>
+                        <td><span class="badge badge-{{ order.status }}">{{ order.get_status_display }}</span></td>
+                        <td>${{ order.total }}</td>
+                        <td>
+                            <a href="{% url 'orders:order_detail' order_number=order.order_number %}" class="btn btn-sm">View</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="no-data">No orders found.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+
+
+
+
+
+
+
+

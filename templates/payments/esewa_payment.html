@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}eSewa Payment - PawPalace{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="payment-page">
+        <div class="payment-header">
+            <h1><i class="fas fa-mobile-alt"></i> eSewa Payment</h1>
+            <p>Complete your payment securely</p>
+        </div>
+
+        <div class="payment-container">
+            <div class="payment-summary">
+                <h3>Order Summary</h3>
+                <div class="summary-card">
+                    <div class="summary-item">
+                        <span>Order Number:</span>
+                        <strong>#{{ order.order_number }}</strong>
+                    </div>
+                    <div class="summary-item">
+                        <span>Amount:</span>
+                        <strong>${{ order.total }}</strong>
+                    </div>
+                    <div class="summary-item">
+                        <span>Items:</span>
+                        <span>{{ order.items.count }} item(s)</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="esewa-payment-box">
+                <div class="esewa-logo">
+                    <i class="fas fa-mobile-alt"></i>
+                    <h2>eSewa</h2>
+                </div>
+                
+                <div class="payment-form">
+                    <form method="post" id="esewa-form">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label>eSewa ID / Mobile Number</label>
+                            <input type="text" class="form-control" placeholder="Enter your eSewa ID or Mobile Number" required>
+                        </div>
+                        <div class="form-group">
+                            <label>MPIN</label>
+                            <input type="password" class="form-control" placeholder="Enter your MPIN" required>
+                        </div>
+                        
+                        <div class="payment-amount-display">
+                            <div class="amount-label">Amount to Pay</div>
+                            <div class="amount-value">${{ order.total }}</div>
+                        </div>
+
+                        <button type="submit" class="btn btn-success btn-lg btn-block">
+                            <i class="fas fa-lock"></i> Pay Now
+                        </button>
+                    </form>
+                </div>
+
+                <div class="payment-security">
+                    <p><i class="fas fa-shield-alt"></i> Your payment is secure and encrypted</p>
+                </div>
+            </div>
+
+            <div class="payment-actions">
+                <a href="{% url 'orders:order_detail' order_number=order.order_number %}" class="btn btn-outline">
+                    <i class="fas fa-arrow-left"></i> Cancel Payment
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.payment-page {
+    max-width: 800px;
+    margin: 2rem auto;
+}
+
+.payment-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.payment-header h1 {
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.payment-container {
+    background: white;
+    border-radius: 10px;
+    padding: 2rem;
+    box-shadow: var(--shadow-lg);
+}
+
+.payment-summary {
+    margin-bottom: 2rem;
+}
+
+.summary-card {
+    background: var(--light-color);
+    padding: 1.5rem;
+    border-radius: 8px;
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.summary-item:last-child {
+    border-bottom: none;
+}
+
+.esewa-payment-box {
+    border: 2px solid var(--primary-color);
+    border-radius: 10px;
+    padding: 2rem;
+    margin: 2rem 0;
+}
+
+.esewa-logo {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.esewa-logo i {
+    font-size: 3rem;
+    color: var(--primary-color);
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.esewa-logo h2 {
+    color: var(--primary-color);
+    margin: 0;
+}
+
+.payment-amount-display {
+    background: var(--light-color);
+    padding: 1.5rem;
+    border-radius: 8px;
+    text-align: center;
+    margin: 1.5rem 0;
+}
+
+.amount-label {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 0.5rem;
+}
+
+.amount-value {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.payment-security {
+    text-align: center;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+    color: var(--secondary-color);
+}
+
+.payment-actions {
+    text-align: center;
+    margin-top: 2rem;
+}
+</style>
+{% endblock %}
+
+

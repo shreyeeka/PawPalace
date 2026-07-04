@@ -1,0 +1,195 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Checkout - PawPalace{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>Checkout</h1>
+    </div>
+
+    <div class="checkout-container">
+        <div class="checkout-items">
+            <h3>Order Items</h3>
+            <table class="checkout-table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in cart_items %}
+                    <tr>
+                        <td>{{ item.product.name }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>${{ item.product.get_final_price }}</td>
+                        <td>${{ item.get_total_price }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="checkout-form-container">
+            <h3>Shipping Information</h3>
+            <form method="post" class="checkout-form">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label>Full Name</label>
+                    {{ form.shipping_name }}
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    {{ form.shipping_phone }}
+                </div>
+                <div class="form-group">
+                    <label>Address</label>
+                    {{ form.shipping_address }}
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>City</label>
+                        {{ form.shipping_city }}
+                    </div>
+                    <div class="form-group">
+                        <label>State</label>
+                        {{ form.shipping_state }}
+                    </div>
+                    <div class="form-group">
+                        <label>ZIP Code</label>
+                        {{ form.shipping_zip }}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Order Notes (Optional)</label>
+                    {{ form.notes }}
+                </div>
+
+                <!-- Payment Methods -->
+                <div class="payment-method-section">
+                    <h3>Payment Method</h3>
+                    <div class="payment-methods">
+                        <label class="payment-method-option">
+                            <input type="radio" name="payment_method" value="cod" checked>
+                            <div class="payment-method-card">
+                                <i class="fas fa-money-bill-wave"></i>
+                                <div>
+                                    <strong>Cash on Delivery</strong>
+                                    <p>Pay when you receive your order</p>
+                                </div>
+                            </div>
+                        </label>
+                        <label class="payment-method-option">
+                            <input type="radio" name="payment_method" value="esewa">
+                            <div class="payment-method-card">
+                                <i class="fas fa-mobile-alt"></i>
+                                <div>
+                                    <strong>eSewa</strong>
+                                    <p>Pay securely with eSewa</p>
+                                </div>
+                            </div>
+                        </label>
+                        <label class="payment-method-option">
+                            <input type="radio" name="payment_method" value="stripe">
+                            <div class="payment-method-card">
+                                <i class="fas fa-credit-card"></i>
+                                <div>
+                                    <strong>Stripe (Card)</strong>
+                                    <p>Pay securely with Stripe Checkout</p>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Order Summary -->
+                <div class="order-summary">
+                    <div class="summary-row">
+                        <span>Subtotal:</span>
+                        <span>${{ subtotal }}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Shipping:</span>
+                        <span>{% if subtotal >= 500 %}Free{% else %}$50{% endif %}</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Total:</span>
+                        <span>${{ total }}</span>
+                    </div>
+                </div>
+
+                <!-- Buttons -->
+                <button id="place-order-btn" type="submit" class="btn btn-primary btn-lg btn-block">Place Order</button>
+                <button id="stripe-btn" type="button" class="btn btn-primary btn-lg btn-block" style="display:none;">Pay with Stripe</button>
+                <a href="{% url 'orders:cart' %}" class="btn btn-outline btn-block">Back to Cart</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+const paymentRadios = document.querySelectorAll('input[name="payment_method"]');
+const placeOrderBtn = document.getElementById('place-order-btn');
+const stripeBtn = document.getElementById('stripe-btn');
+const form = document.querySelector('.checkout-form');
+const stripePublicKey = "{{ stripe_public_key|escapejs }}";
+const stripe = stripePublicKey ? Stripe(stripePublicKey) : null;
+
+function toggleButtons() {
+    const selected = document.querySelector('input[name="payment_method"]:checked');
+    if (selected && selected.value === 'stripe') {
+        placeOrderBtn.style.display = 'none';
+        stripeBtn.style.display = 'block';
+    } else {
+        placeOrderBtn.style.display = 'block';
+        stripeBtn.style.display = 'none';
+    }
+}
+
+paymentRadios.forEach(r => r.addEventListener('change', toggleButtons));
+toggleButtons();
+
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
+// Stripe Checkout
+if (stripeBtn && stripe) {
+    stripeBtn.addEventListener('click', async () => {
+        stripeBtn.disabled = true;
+        stripeBtn.textContent = 'Redirecting...';
+
+        const formData = new FormData(form);
+        formData.set('payment_method', 'stripe');
+
+        try {
+            const res = await fetch("{% url 'payments:create_checkout_session' %}", {
+                method: "POST",
+                headers: { "X-CSRFToken": getCookie('csrftoken') || '' },
+                body: formData
+            });
+
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Unable to start Stripe Checkout.');
+
+            const result = await stripe.redirectToCheckout({ sessionId: data.id });
+            if (result.error) throw new Error(result.error.message);
+
+        } catch (err) {
+            alert(err.message || 'Something went wrong. Please try again.');
+            stripeBtn.disabled = false;
+            stripeBtn.textContent = 'Pay with Stripe';
+        }
+    });
+}
+</script>
+{% endblock %}

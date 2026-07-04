@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Payment Details - PawPalace{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>Payment Details</h1>
+    </div>
+
+    <div class="payment-detail-card">
+        <h2>Payment Information</h2>
+        <div class="info-grid">
+            <div class="info-item">
+                <strong>Order Number:</strong> {{ order.order_number }}
+            </div>
+            <div class="info-item">
+                <strong>Payment Method:</strong> {{ payment.get_payment_method_display }}
+            </div>
+            <div class="info-item">
+                <strong>Amount:</strong> ${{ payment.amount }}
+            </div>
+            <div class="info-item">
+                <strong>Status:</strong> 
+                <span class="badge badge-{{ payment.status }}">{{ payment.get_status_display }}</span>
+            </div>
+            {% if payment.transaction_id %}
+            <div class="info-item">
+                <strong>Transaction ID:</strong> {{ payment.transaction_id }}
+            </div>
+            {% endif %}
+            {% if payment.payment_date %}
+            <div class="info-item">
+                <strong>Payment Date:</strong> {{ payment.payment_date|date:"F d, Y H:i" }}
+            </div>
+            {% endif %}
+            <div class="info-item">
+                <strong>Created:</strong> {{ payment.created_at|date:"F d, Y H:i" }}
+            </div>
+        </div>
+
+        <div class="payment-actions">
+            <a href="{% url 'orders:order_detail' order_number=order.order_number %}" class="btn btn-primary">View Order</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+
+
+
+
+
+
+

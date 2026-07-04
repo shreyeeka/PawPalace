@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ category.name }} - PawPalace{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>{{ category.name }}</h1>
+        {% if category.description %}
+            <p>{{ category.description }}</p>
+        {% endif %}
+    </div>
+
+    <div class="products-grid">
+        {% for product in page_obj %}
+        <div class="product-card">
+            <a href="{% url 'products:detail' slug=product.slug %}">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+                {% else %}
+                    <div class="product-image-placeholder"><i class="fas fa-image"></i></div>
+                {% endif %}
+                {% if product.discount_price %}
+                    <span class="badge badge-discount">{{ product.get_discount_percentage }}% OFF</span>
+                {% endif %}
+                <div class="product-info">
+                    <h3 class="product-name">{{ product.name }}</h3>
+                    <div class="product-price">
+                        {% if product.discount_price %}
+                            <span class="price-old">${{ product.price }}</span>
+                            <span class="price-new">${{ product.discount_price }}</span>
+                        {% else %}
+                            <span class="price">${{ product.price }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% empty %}
+        <p class="no-products">No products in this category.</p>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <div class="pagination">
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}" class="btn">Previous</a>
+        {% endif %}
+        <span class="page-info">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="btn">Next</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+
+
+
+
+
+
+
+

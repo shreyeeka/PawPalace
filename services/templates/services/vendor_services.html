@@ -1,0 +1,27 @@
+<!-- File: services/templates/services/vendor_services.html -->
+
+{% extends "base.html" %}
+
+{% block title %}My Services{% endblock %}
+
+{% block content %}
+<h1>My Services</h1>
+
+
+
+<!-- List of services -->
+{% if services %}
+    <ul>
+    {% for service in services %}
+        <li>
+            <strong>{{ service.name }}</strong> - {{ service.description }} - ${{ service.price }}
+            
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No services found.<a href="{% url 'services:add_service' %}" class="btn btn-primary">Add New Service</a>
+</p>
+{% endif %}
+
+{% endblock %}

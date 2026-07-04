@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ product.name }} - PawPalace{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="product-detail">
+        <div class="product-images">
+            {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="main-image">
+            {% else %}
+                <div class="main-image-placeholder"><i class="fas fa-image"></i></div>
+            {% endif %}
+        </div>
+
+        <div class="product-details">
+            <h1>{{ product.name }}</h1>
+            <div class="product-meta">
+                <span class="category-badge">{{ product.category.name }}</span>
+                {% if product.brand %}
+                    <span class="brand-badge">{{ product.brand.name }}</span>
+                {% endif %}
+            </div>
+
+            <div class="product-price">
+                {% if product.discount_price %}
+                    <span class="price-old">${{ product.price }}</span>
+                    <span class="price-new">${{ product.discount_price }}</span>
+                    <span class="discount-badge">{{ product.get_discount_percentage }}% OFF</span>
+                {% else %}
+                    <span class="price">${{ product.price }}</span>
+                {% endif %}
+            </div>
+
+            <div class="product-description">
+                <h3>Description</h3>
+                <p>{{ product.description|linebreaks }}</p>
+            </div>
+
+            <div class="product-stock">
+                {% if product.is_in_stock %}
+                    <span class="stock-available"><i class="fas fa-check-circle"></i> In Stock ({{ product.stock }} available)</span>
+                {% else %}
+                    <span class="stock-unavailable"><i class="fas fa-times-circle"></i> Out of Stock</span>
+                {% endif %}
+            </div>
+
+            {% if user.is_customer %}
+                {% if product.is_in_stock %}
+                <form method="post" action="{% url 'orders:add_to_cart' product_id=product.id %}" class="add-to-cart-form">
+                    {% csrf_token %}
+                    <div class="quantity-selector">
+                        <label>Quantity:</label>
+                        <input type="number" name="quantity" id="product-quantity" value="1" min="1" max="{{ product.stock }}" class="form-control">
+                    </div>
+                    <div class="product-actions">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-shopping-cart"></i> Add to Cart
+                        </button>
+                        <a href="{% url 'orders:buy_now' product_id=product.id %}?quantity=1" class="btn btn-success btn-lg" id="buy-now-btn">
+                            <i class="fas fa-bolt"></i> Buy Now
+                        </a>
+                    </div>
+                </form>
+                {% else %}
+                    <button class="btn btn-disabled" disabled>Out of Stock</button>
+                {% endif %}
+            {% elif not user.is_authenticated %}
+                <a href="{% url 'accounts:login' %}" class="btn btn-primary btn-lg">Login to Purchase</a>
+            {% endif %}
+
+            <div class="product-vendor">
+                <p><strong>Vendor:</strong> {{ product.vendor.username }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Related Products -->
+    {% if related_products %}
+    <section class="related-products">
+        <h2>Related Products</h2>
+        <div class="products-grid">
+            {% for product in related_products %}
+            <div class="product-card">
+                <a href="{% url 'products:detail' slug=product.slug %}">
+                    {% if product.image %}
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+                    {% else %}
+                        <div class="product-image-placeholder"><i class="fas fa-image"></i></div>
+                    {% endif %}
+                    <div class="product-info">
+                        <h3 class="product-name">{{ product.name }}</h3>
+                        <div class="product-price">
+                            {% if product.discount_price %}
+                                <span class="price-old">${{ product.price }}</span>
+                                <span class="price-new">${{ product.discount_price }}</span>
+                            {% else %}
+                                <span class="price">${{ product.price }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+</div>
+{% endblock %}
+
+
+
+
+
+
+
+

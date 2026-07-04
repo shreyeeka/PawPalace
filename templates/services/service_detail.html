@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ service.name }} - PawPalace{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="service-detail">
+        <div class="service-images">
+            {% if service.image %}
+                <img src="{{ service.image.url }}" alt="{{ service.name }}" class="main-image">
+            {% else %}
+                <div class="main-image-placeholder"><i class="fas fa-paw"></i></div>
+            {% endif %}
+        </div>
+
+        <div class="service-details">
+            <h1>{{ service.name }}</h1>
+            <div class="service-meta">
+                <span class="category-badge">{{ service.category.name }}</span>
+            </div>
+
+            <div class="service-price">
+                <span class="price">${{ service.price }}</span>
+                <span class="duration"><i class="fas fa-clock"></i> {{ service.duration }} minutes</span>
+            </div>
+
+            <div class="service-description">
+                <h3>Description</h3>
+                <p>{{ service.description|linebreaks }}</p>
+            </div>
+
+            <div class="service-vendor">
+                <p><strong>Service Provider:</strong> {{ service.vendor.username }}</p>
+            </div>
+
+            {% if user.is_customer %}
+                <a href="{% url 'services:book' slug=service.slug %}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-calendar-check"></i> Book Now
+                </a>
+            {% elif not user.is_authenticated %}
+                <a href="{% url 'accounts:login' %}" class="btn btn-primary btn-lg">Login to Book</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Related Services -->
+    {% if related_services %}
+    <section class="related-services">
+        <h2>Related Services</h2>
+        <div class="services-grid">
+            {% for service in related_services %}
+            <div class="service-card">
+                <a href="{% url 'services:detail' slug=service.slug %}">
+                    {% if service.image %}
+                        <img src="{{ service.image.url }}" alt="{{ service.name }}" class="service-image">
+                    {% else %}
+                        <div class="service-image-placeholder"><i class="fas fa-paw"></i></div>
+                    {% endif %}
+                    <div class="service-info">
+                        <h3>{{ service.name }}</h3>
+                        <div class="service-price">${{ service.price }}</div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+</div>
+{% endblock %}
+
+
+
+
+
+
+
+
+

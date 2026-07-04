@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Delete Product - PawPalace{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Delete Product</h2>
+
+    <div class="card p-4 shadow-sm">
+        <p>Are you sure you want to delete the product <strong>{{ product.name }}</strong>?</p>
+        <p class="text-muted">This action cannot be undone.</p>
+
+        <form method="POST">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Yes, Delete</button>
+            <a href="{% url 'dashboard:vendor_products' %}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+
+
+
+
+
+

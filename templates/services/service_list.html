@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Services - PawPalace{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>Pet Services</h1>
+    </div>
+
+    <div class="services-layout">
+        <aside class="filters-sidebar">
+            <h3>Filters</h3>
+            <form method="get" class="filter-form">
+                <div class="form-group">
+                    <input type="text" name="search" value="{{ search_query }}" placeholder="Search services..." class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select name="category" class="form-control">
+                        <option value="">All Categories</option>
+                        {% for category in categories %}
+                            <option value="{{ category.slug }}" {% if selected_category == category.slug %}selected{% endif %}>
+                                {{ category.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Apply Filters</button>
+                <a href="{% url 'services:list' %}" class="btn btn-outline">Clear</a>
+            </form>
+        </aside>
+
+        <main class="services-main">
+            {% if page_obj %}
+                <div class="services-grid">
+                    {% for service in page_obj %}
+                    <div class="service-card">
+                        <a href="{% url 'services:detail' slug=service.slug %}">
+                            {% if service.image %}
+                                <img src="{{ service.image.url }}" alt="{{ service.name }}" class="service-image">
+                            {% else %}
+                                <div class="service-image-placeholder"><i class="fas fa-paw"></i></div>
+                            {% endif %}
+                            <div class="service-info">
+                                <h3>{{ service.name }}</h3>
+                                <p class="service-category">{{ service.category.name }}</p>
+                                <p class="service-description">{{ service.description|truncatewords:20 }}</p>
+                                <div class="service-meta">
+                                    <span class="service-price">${{ service.price }}</span>
+                                    <span class="service-duration"><i class="fas fa-clock"></i> {{ service.duration }} min</span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Pagination -->
+                {% if page_obj.has_other_pages %}
+                <div class="pagination">
+                    {% if page_obj.has_previous %}
+                        <a href="?page={{ page_obj.previous_page_number }}" class="btn">Previous</a>
+                    {% endif %}
+                    <span class="page-info">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}" class="btn">Next</a>
+                    {% endif %}
+                </div>
+                {% endif %}
+            {% else %}
+                <p class="no-services">No services found.</p>
+            {% endif %}
+        </main>
+    </div>
+</div>
+{% endblock %}
+
+
+
+
+
+
+
+
+

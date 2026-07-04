@@ -1,0 +1,204 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Order Confirmed - PawPalace{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="order-success-page">
+        <div class="success-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        
+        <h1>Order Confirmed!</h1>
+        <p class="success-message">Thank you for your purchase. Your order has been placed successfully.</p>
+
+        <div class="order-details-card">
+            <h3>Order Details</h3>
+            <div class="detail-row">
+                <span>Order Number:</span>
+                <strong>#{{ order.order_number }}</strong>
+            </div>
+            <div class="detail-row">
+                <span>Order Date:</span>
+                <span>{{ order.created_at|date:"F d, Y h:i A" }}</span>
+            </div>
+            <div class="detail-row">
+                <span>Total Amount:</span>
+                <strong>${{ order.total }}</strong>
+            </div>
+            {% if payment %}
+            <div class="detail-row">
+                <span>Payment Method:</span>
+                <span>{{ payment.get_payment_method_display }}</span>
+            </div>
+            {% if payment.transaction_id %}
+            <div class="detail-row">
+                <span>Transaction ID:</span>
+                <span>{{ payment.transaction_id }}</span>
+            </div>
+            {% endif %}
+            {% endif %}
+            <div class="detail-row">
+                <span>Status:</span>
+                <span class="badge badge-{{ order.status }}">{{ order.get_status_display }}</span>
+            </div>
+        </div>
+
+        <div class="shipping-info-card">
+            <h3>Shipping Address</h3>
+            <p><strong>{{ order.shipping_name }}</strong></p>
+            <p>{{ order.shipping_address }}</p>
+            <p>{{ order.shipping_city }}, {{ order.shipping_state }} {{ order.shipping_zip }}</p>
+            <p><i class="fas fa-phone"></i> {{ order.shipping_phone }}</p>
+        </div>
+
+        <div class="order-items-summary">
+            <h3>Order Items</h3>
+            <table class="order-items-table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in order.items.all %}
+                    <tr>
+                        <td>{{ item.product_name }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>${{ item.price }}</td>
+                        <td>${{ item.total }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3"><strong>Subtotal:</strong></td>
+                        <td><strong>${{ order.subtotal }}</strong></td>
+                    </tr>
+                    <tr>
+                        <td colspan="3"><strong>Shipping:</strong></td>
+                        <td><strong>${{ order.shipping_cost }}</strong></td>
+                    </tr>
+                    <tr class="total-row">
+                        <td colspan="3"><strong>Total:</strong></td>
+                        <td><strong>${{ order.total }}</strong></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <div class="success-actions">
+            <a href="{% url 'orders:order_detail' order_number=order.order_number %}" class="btn btn-primary">
+                <i class="fas fa-eye"></i> View Order Details
+            </a>
+            <a href="{% url 'orders:my_orders' %}" class="btn btn-outline">
+                <i class="fas fa-list"></i> My Orders
+            </a>
+            <a href="{% url 'products:list' %}" class="btn btn-outline">
+                <i class="fas fa-shopping-bag"></i> Continue Shopping
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+.order-success-page {
+    max-width: 900px;
+    margin: 2rem auto;
+    text-align: center;
+}
+
+.success-icon {
+    font-size: 5rem;
+    color: var(--secondary-color);
+    margin-bottom: 1rem;
+}
+
+.order-success-page h1 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.success-message {
+    font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 2rem;
+}
+
+.order-details-card,
+.shipping-info-card,
+.order-items-summary {
+    background: white;
+    border-radius: 10px;
+    padding: 2rem;
+    margin: 1.5rem 0;
+    box-shadow: var(--shadow);
+    text-align: left;
+}
+
+.order-details-card h3,
+.shipping-info-card h3,
+.order-items-summary h3 {
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid var(--light-color);
+    padding-bottom: 0.5rem;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--light-color);
+}
+
+.detail-row:last-child {
+    border-bottom: none;
+}
+
+.shipping-info-card p {
+    margin: 0.5rem 0;
+}
+
+.order-items-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+.order-items-table th,
+.order-items-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--light-color);
+}
+
+.order-items-table th {
+    background: var(--light-color);
+    font-weight: 600;
+}
+
+.order-items-table tfoot {
+    font-weight: 600;
+}
+
+.total-row {
+    background: var(--light-color);
+    font-size: 1.1rem;
+}
+
+.success-actions {
+    margin-top: 2rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+</style>
+{% endblock %}
+
+

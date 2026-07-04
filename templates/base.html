@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-9QEG5MQ7GY"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-9QEG5MQ7GY');
+</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}PawPalace - Pet Supplies & Services{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="{% url 'products:home' %}">
+                    <i class="fas fa-paw"></i> PawPalace
+                </a>
+            </div>
+            <div class="nav-menu" id="navMenu">
+                <a href="{% url 'products:home' %}" class="nav-link">Home</a>
+                <a href="{% url 'products:list' %}" class="nav-link">Products</a>
+                <a href="{% url 'services:list' %}" class="nav-link">Services</a>
+                
+                {% if user.is_authenticated %}
+                    {% if user.is_customer %}
+                        <a href="{% url 'orders:cart' %}" class="nav-link">
+                            <i class="fas fa-shopping-cart"></i> Cart 
+                            {% if cart_count > 0 %}<span class="badge">{{ cart_count }}</span>{% endif %}
+                        </a>
+                        <a href="{% url 'orders:my_orders' %}" class="nav-link">My Orders</a>
+                    {% endif %}
+                    
+                    {% if user.is_vendor %}
+                        <a href="{% url 'dashboard:vendor_dashboard' %}" class="nav-link">Dashboard</a>
+                    {% endif %}
+                    
+                    {% if user.is_admin %}
+                        <a href="{% url 'dashboard:admin_dashboard' %}" class="nav-link">Admin</a>
+                    {% endif %}
+                    
+                    <div class="nav-dropdown">
+                        <a href="#" class="nav-link">
+                            <i class="fas fa-user"></i> {{ user.username }}
+                        </a>
+                        <div class="dropdown-menu">
+                            <a href="{% url 'accounts:profile' %}" class="dropdown-item">Profile</a>
+                            {% if user.is_customer %}
+                                <a href="{% url 'services:my_bookings' %}" class="dropdown-item">My Bookings</a>
+                            {% endif %}
+                            <form action="{% url 'accounts:logout' %}" method="post" style="display: inline;">
+                                          {% csrf_token %}
+                                   <button type="submit" class="dropdown-item">Logout</button>
+                           </form>
+                        </div>
+                    </div>
+                {% else %}
+                    <a href="{% url 'accounts:login' %}" class="nav-link">Login</a>
+                    <a href="{% url 'accounts:register' %}" class="btn btn-primary">Sign Up</a>
+                {% endif %}
+            </div>
+            <div class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Messages -->
+    {% if messages %}
+        <div class="messages-container">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                    <button class="close-btn" onclick="this.parentElement.remove()">&times;</button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main class="main-content">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3><i class="fas fa-paw"></i> PawPalace</h3>
+                    <p>Your trusted partner for all pet supplies and services.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="{% url 'products:list' %}">Products</a></li>
+                        <li><a href="{% url 'services:list' %}">Services</a></li>
+                        <li><a href="{% url 'products:home' %}">About Us</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <p><i class="fas fa-envelope"></i> info@pawpalace.com</p>
+                    <p><i class="fas fa-phone"></i> +1 (555) 123-4567</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 PawPalace. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
+
+
+
+
+
+
+
+
+

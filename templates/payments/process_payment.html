@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Payment - PawPalace{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>Payment</h1>
+    </div>
+
+    <div class="payment-container">
+        <div class="payment-card">
+            <div class="order-summary-payment">
+                <h3>Order Summary</h3>
+                <p><strong>Order #:</strong> {{ order.order_number }}</p>
+                <p><strong>Total Amount:</strong> ${{ order.total }}</p>
+            </div>
+
+            <form method="post" class="payment-form">
+                {% csrf_token %}
+                <h3>Select Payment Method</h3>
+                <div class="payment-methods">
+                    {% for choice in form.payment_method %}
+                        <div class="payment-method-option">
+                            {{ choice.tag }}
+                            <label for="{{ choice.id_for_label }}">
+                                {{ choice.choice_label }}
+                            </label>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <div id="onlinePaymentInfo" style="display: none;" class="payment-info-box">
+                    <p><i class="fas fa-info-circle"></i> This is a mock payment system. Your payment will be processed automatically.</p>
+                </div>
+
+                <div id="codPaymentInfo" style="display: none;" class="payment-info-box">
+                    <p><i class="fas fa-info-circle"></i> Payment will be collected when your order is delivered.</p>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg btn-block">Process Payment</button>
+                <a href="{% url 'orders:order_detail' order_number=order.order_number %}" class="btn btn-outline btn-block">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const paymentMethods = document.querySelectorAll('input[name="payment_method"]');
+    const onlineInfo = document.getElementById('onlinePaymentInfo');
+    const codInfo = document.getElementById('codPaymentInfo');
+
+    function updatePaymentInfo() {
+        const selected = document.querySelector('input[name="payment_method"]:checked');
+        if (selected) {
+            if (selected.value === 'online') {
+                onlineInfo.style.display = 'block';
+                codInfo.style.display = 'none';
+            } else {
+                onlineInfo.style.display = 'none';
+                codInfo.style.display = 'block';
+            }
+        }
+    }
+
+    paymentMethods.forEach(method => {
+        method.addEventListener('change', updatePaymentInfo);
+    });
+
+    updatePaymentInfo();
+});
+</script>
+{% endblock %}
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,12 @@
+<h2>My Products</h2>
+{% if products %}
+    <ul>
+    {% for product in products %}
+        <li>{{ product.name }} - ${{ product.price }}</li>
+    {% endfor %}
+    </ul>
+{% else %}
+   <p>No products yet. <a href="{% url 'products:add_product' %}">Add your first product</a>
+</p>
+
+{% endif %}

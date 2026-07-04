@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Order #{{ order.order_number }} - PawPalace{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>Order #{{ order.order_number }}</h1>
+    </div>
+
+    <div class="order-detail-container">
+        <div class="order-info">
+            <h2>Order Information</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <strong>Order Number:</strong> {{ order.order_number }}
+                </div>
+                <div class="info-item">
+                    <strong>Status:</strong> 
+                    <span class="badge badge-{{ order.status }}">{{ order.get_status_display }}</span>
+                </div>
+                <div class="info-item">
+                    <strong>Order Date:</strong> {{ order.created_at|date:"F d, Y H:i" }}
+                </div>
+                <div class="info-item">
+                    <strong>Total:</strong> ${{ order.total }}
+                </div>
+            </div>
+
+            <h3>Shipping Address</h3>
+            <div class="shipping-address">
+                <p>{{ order.shipping_name }}</p>
+                <p>{{ order.shipping_address }}</p>
+                <p>{{ order.shipping_city }}, {{ order.shipping_state }} {{ order.shipping_zip }}</p>
+                <p>Phone: {{ order.shipping_phone }}</p>
+            </div>
+        </div>
+
+        <div class="order-items">
+            <h2>Order Items</h2>
+            <table class="order-items-table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in order.items.all %}
+                    <tr>
+                        <td>{{ item.product_name }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>${{ item.price }}</td>
+                        <td>${{ item.total }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3"><strong>Subtotal:</strong></td>
+                        <td>${{ order.subtotal }}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="3"><strong>Shipping:</strong></td>
+                        <td>${{ order.shipping_cost }}</td>
+                    </tr>
+                    <tr class="total-row">
+                        <td colspan="3"><strong>Total:</strong></td>
+                        <td><strong>${{ order.total }}</strong></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        {% if payment %}
+        <div class="payment-info">
+            <h2>Payment Information</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <strong>Payment Method:</strong> {{ payment.get_payment_method_display }}
+                </div>
+                <div class="info-item">
+                    <strong>Status:</strong> 
+                    <span class="badge badge-{{ payment.status }}">{{ payment.get_status_display }}</span>
+                </div>
+                {% if payment.transaction_id %}
+                <div class="info-item">
+                    <strong>Transaction ID:</strong> {{ payment.transaction_id }}
+                </div>
+                {% endif %}
+                {% if payment.payment_date %}
+                <div class="info-item">
+                    <strong>Payment Date:</strong> {{ payment.payment_date|date:"F d, Y H:i" }}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% elif user.is_customer %}
+        <div class="payment-section">
+            <a href="{% url 'payments:process_payment' order_number=order.order_number %}" class="btn btn-primary btn-lg">
+                Proceed to Payment
+            </a>
+        </div>
+        {% endif %}
+
+        {% if user.is_vendor or user.is_admin %}
+        <div class="order-actions">
+            <h3>Update Order Status</h3>
+            <form method="post" action="{% url 'orders:update_order_status' order_number=order.order_number %}">
+                {% csrf_token %}
+                <select name="status" class="form-control">
+                    {% for value, label in order.STATUS_CHOICES %}
+                        <option value="{{ value }}" {% if order.status == value %}selected{% endif %}>
+                            {{ label }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="btn btn-primary">Update Status</button>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+
+
+
+
+
+
+
+

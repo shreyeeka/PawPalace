@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Checkout - PawPalace{% endblock %}
+
+{% block content %}
+<div class="payment-bg">
+    <div class="container">
+        <div class="payment-shell">
+            <div class="payment-card-modern">
+                <div class="payment-card-header">
+                    <h1>PawPalace Checkout</h1>
+                    <p class="payment-subtitle">Secure one-time payment via Stripe Checkout</p>
+                </div>
+
+                <div class="payment-summary-modern">
+                    <div class="payment-summary-row">
+                        <span>Product</span>
+                        <strong>PawPalace Order</strong>
+                    </div>
+                    <div class="payment-summary-row">
+                        <span>Amount</span>
+                        <strong>{{ currency|upper }} {{ display_amount }}</strong>
+                    </div>
+                    <p class="payment-note">
+                        You can test with <code>?amount=1000</code> (= 10.00).
+                    </p>
+                </div>
+
+                <!-- Stripe Checkout -->
+                <form id="stripeCheckoutForm" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="amount" value="{{ amount }}">
+                    <button id="checkout-button" type="button" class="btn btn-primary btn-lg payment-btn">
+                        Pay with Stripe
+                    </button>
+                </form>
+
+                <div class="payment-footnote">
+                    <span class="payment-lock"><i class="fas fa-lock"></i> Secure checkout</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    const stripe = Stripe("{{ stripe_public_key|escapejs }}");
+    const button = document.getElementById("checkout-button");
+    const amount = document.querySelector('input[name="amount"]').value;
+
+    button.addEventListener("click", async function () {
+        button.disabled = true;
+        button.classList.add("is-loading");
+
+        try {
+            const res = await fetch("{% url 'payments:create_checkout_session' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+                    "X-CSRFToken": getCookie("csrftoken")
+                },
+                body: new URLSearchParams({ amount }).toString()
+            });
+
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || "Failed to create checkout session.");
+
+            const result = await stripe.redirectToCheckout({ sessionId: data.id });
+            if (result.error) throw new Error(result.error.message);
+        } catch (err) {
+            alert(err.message || "Something went wrong. Please try again.");
+            button.disabled = false;
+            button.classList.remove("is-loading");
+        }
+    });
+});
+</script>
+{% endblock %}
